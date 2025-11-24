@@ -1,46 +1,42 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>OrbicXs</title>
-  <meta name="theme-color" content="#007aff">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="manifest" href="data:application/manifest+json,{\"name\":\"OrbicXs\",\"short_name\":\"OrbicXs\",\"start_url\":\"/\",\"display\":\"standalone\",\"background_color\":\"#000\",\"theme_color\":\"#007aff\",\"icons\":[{\"src\":\"https://orbicxs1-1.vercel.app/icon.png\",\"sizes\":\"192x192\",\"type\":\"image/png\"}]}">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap');
     *{margin:0;padding:0;box-sizing:border-box;font-family:'SF Pro Display',sans-serif;-webkit-tap-highlight-color:transparent;}
     html,body{height:100%;overflow:hidden;background:#000;}
     body{display:flex;justify-content:center;align-items:center;}
-    .app{width:100%;max-width:420px;height:100dvh;background:#fff;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 10px 50px rgba(0,0,0,.6);border-radius:20px;}
-    .screen{position:absolute;inset:0;display:flex;flex-direction:column;transition:opacity .3s;opacity:0;pointer-events:none;}
+    .app{width:100%;max-width:420px;height:100dvh;background:#fff;overflow:hidden;display:flex;flex-direction:column;position:relative;border-radius:20px;box-shadow:0 10px 50px rgba(0,0,0,.6);}
+    .screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .3s;}
     .screen.active{opacity:1;pointer-events:all;z-index:10;}
     .header{background:#007aff;color:#fff;padding:12px 16px 12px 56px;font-size:19px;font-weight:600;position:relative;}
-    .back{position:absolute;left:12px;top:10px;font-size:32px;cursor:pointer;z-index:10;}
+    .back{position:absolute;left:12px;top:10px;font-size:32px;cursor:pointer;}
     .input{width:100%;padding:16px;border-radius:14px;border:1px solid #ddd;font-size:17px;background:#f9f9f9;margin:12px 0;}
     .btn{width:100%;padding:16px;background:#007aff;color:#fff;border:none;border-radius:14px;font-size:18px;margin-top:20px;cursor:pointer;}
-    .logo svg{width:80px;height:80px;fill:#007aff;margin:0 auto 30px;}
-    .avatar{width:100px;height:100px;background:#e5e5e5;border-radius:50%;margin:30px auto;display:flex;align-items:center;justify-content:center;}
     .search-bar{padding:12px 16px;background:#fff;border-bottom:1px solid #eee;}
     .search-bar input{width:100%;padding:14px 16px;border-radius:12px;background:#e5e5e5;border:none;outline:none;font-size:17px;}
     .chat-list{flex:1;overflow-y:auto;background:#f7f7f8;-webkit-overflow-scrolling:touch;}
     .chat-item{padding:14px 16px;display:flex;align-items:center;border-bottom:1px solid #eee;cursor:pointer;position:relative;}
-    .chat-item img{width:52px;height:52px;border-radius:50%;margin-right:14px;background:#ddd;}
+    .chat-item img{width:52px;height:52px;border-radius:50%;margin-right:14px;}
     .chat-item .name{font-weight:600;font-size:17px;}
     .chat-item .preview{font-size:14.5px;color:#666;margin-top:4px;}
     .chat-item .time{font-size:12.5px;color:#999;position:absolute;right:16px;top:16px;}
-    .badge{background:#ff3b30;color:#fff;border-radius:12px;padding:2px 8px;font-size:11px;font-weight:600;position:absolute;right:12px;top:38px;}
+    .badge{background:#ff3b30;color:#fff;border-radius:12px;padding:2px 8px;font-size:11px;position:absolute;right:12px;top:38px;}
     .messages{flex:1;overflow-y:auto;padding:16px;background:#e5e5ea;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch;}
     .msg{max-width:78%;padding:11px 16px;border-radius:18px;font-size:16.5px;line-height:1.45;word-wrap:break-word;}
     .sent{background:#007aff;color:#fff;margin-left:auto;border-bottom-right-radius:4px;}
     .received{background:#fff;margin-right:auto;border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.1);}
     .msg-time{font-size:11px;opacity:0.8;margin-top:4px;text-align:right;}
-    .read{color:#007aff;font-size:10px;margin-top:2px;text-align:right;}
-    .input-bar{display:flex;padding:10px;background:#fff;border-top:1px solid #eee;gap:10px;align-items:center;}
+    .typing{position:absolute;bottom:70px;left:16px;color:#888;font-style:italic;font-size:13px;}
+    .input-bar{display:flex;padding:10px;background:#fff;border-top:1px solid #eee;gap:10px;align-items:center;position:relative;}
     .input-bar input{flex:1;padding:14px 18px;background:#f0f0f0;border-radius:30px;border:none;outline:none;font-size:17px;}
     .input-bar button{width:48px;height:48px;background:#007aff;color:#fff;border:none;border-radius:50%;font-size:22px;cursor:pointer;}
-    .empty{text-align:center;padding:120px 20px;color:#888;font-size:16px;line-height:1.6;}
-    .status{font-size:13px;color:#ccc;text-align:center;margin-top:4px;}
-    .online-dot{width:10px;height:10px;background:#4cd964;border-radius:50%;display:inline-block;margin-right:6px;}
+    .empty{text-align:center;padding:120px 20px;color:#888;font-size:16px;}
   </style>
 </head>
 <body>
@@ -48,9 +44,8 @@
 
     <!-- EMAIL -->
     <div id="emailScreen" class="screen active">
-      <div style="padding:40px 30px;text-align:center;">
-        <div class="logo"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#007aff"/><path d="M30 50a20 20 0 1 1 40 0" fill="none" stroke="#fff" stroke-width="8"/><circle cx="65" cy="45" r="8" fill="#fff"/></svg></div>
-        <h2>OrbicXs</h2>
+      <div style="padding:50px 30px;text-align:center;">
+        <h2 style="font-size:28px;margin-bottom:30px;color:#007aff;">OrbicXs</h2>
         <input type="email" id="emailInput" class="input" placeholder="Emailingiz" />
         <button class="btn" onclick="sendLink()">KIRISH</button>
       </div>
@@ -58,11 +53,9 @@
 
     <!-- USERNAME -->
     <div id="usernameScreen" class="screen">
-      <div style="padding:40px 30px;text-align:center;">
-        <div class="logo"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#007aff"/><path d="M30 50a20 20 0 1 1 40 0" fill="none" stroke="#fff" stroke-width="8"/><circle cx="65" cy="45" r="8" fill="#fff"/></svg></div>
-        <h2>Ismingizni tanlang</h2>
-        <div class="avatar"><svg viewBox="0 0 100 100" width="60"><circle cx="50" cy="35" r="20" fill="#888"/><path d="M20 90c0-20 20-40 60-40s60 20 60 40" fill="none" stroke="#888" stroke-width="12"/></svg></div>
-        <input type="text" id="nameInput" class="input" placeholder="Masalan: Ali" maxlength="20"/>
+      <div style="padding:50px 30px;text-align:center;">
+        <h2 style="font-size:24px;margin-bottom:20px;">Username tanlang</h2>
+        <input type="text" id="nameInput" class="input" placeholder="Masalan: ali" maxlength="20" />
         <button class="btn" onclick="saveName()">SAQLASH</button>
       </div>
     </div>
@@ -74,7 +67,7 @@
         <input type="text" placeholder="Qidiruv..." oninput="search(this.value)" />
       </div>
       <div class="chat-list" id="chatList">
-        <div class="empty">Hozircha chat yoʻq<br><small>Qidiruvdan boshlang</small></div>
+        <div class="empty">Qidiruvdan foydalaning</div>
       </div>
     </div>
 
@@ -82,18 +75,18 @@
     <div id="chatScreen" class="screen">
       <div class="header">
         <span class="back" onclick="back()">Back</span>
-        <div style="flex:1;text-align:center;">
-          <div class="name" id="chatName"></div>
-          <div class="status" id="statusText">online</div>
+        <div style="flex:1;text-align:center;margin-left:-40px;">
+          <div class="name" id="chatName" style="font-size:19px;"></div>
+          <div id="statusText" style="font-size:13px;color:#ccc;">online</div>
         </div>
       </div>
       <div class="messages" id="messages"></div>
+      <div class="typing" id="typingIndicator"></div>
       <div class="input-bar">
-        <input id="msgText" placeholder="Xabar..." onkeypress="if(event.key==='Enter')send()" />
+        <input id="msgText" placeholder="Xabar..." oninput="typing()" onkeypress="if(event.key==='Enter')send()" />
         <button onclick="send()">Send</button>
       </div>
     </div>
-
   </div>
 
   <audio id="ding" src="https://orbixs.com/ding.mp3" preload="auto"></audio>
@@ -104,11 +97,20 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltZW1naGpuYWNobW92cW9wdmppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTQ5NDgsImV4cCI6MjA3OTU3MDk0OH0.IqeK50FzmiFChB8i5uHrt0ewpmsCUC-vKVPsYnZaklM'
     );
 
-    let me = '', to = '';
+    let me = '', to = '', typingTimer;
     const sound = document.getElementById('ding');
 
-    // Ovoz
-    function play() { sound.currentTime = 0; sound.play().catch(()=>{}); }
+    // PUSH + Ovoz
+    function notify(title, body) {
+      if (Notification.permission === "granted") {
+        new Notification(title, { body, icon: "/icon.png" });
+      }
+      sound.play().catch(()=>{});
+    }
+
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
 
     async function sendLink() {
       const email = document.getElementById('emailInput').value.trim();
@@ -123,67 +125,44 @@
 
     async function saveName() {
       let name = document.getElementById('nameInput').value.trim().replace(/[^a-zA-Z0-9_]/g, '');
-      if (name.length < 2) return alert('Ism kamida 2 harf boʻlsin');
+      if (name.length < 3) return alert('Kamida 3 harf');
       me = '@' + name.toLowerCase();
 
       const { data: exists } = await supabase.from('profiles').select('id').eq('username', me);
-      if (exists.length > 0) return alert('Bu username band!');
+      if (exists.length) return alert('Bu username band!');
 
       const { data: { user } } = await supabase.auth.getUser();
-      const { error } = await supabase.from('profiles').upsert({ id: user.id, username: me, last_seen: new Date().toISOString() });
-      if (error) return alert('Xato: ' + error.message);
-
+      await supabase.from('profiles').upsert({ id: user.id, username: me });
       goTo('chatsScreen');
       loadChats();
-      startPresence(); // ONLINE HOLAT
+      startPresence();
     }
 
-    // ONLINE / LAST SEEN
-    async function startPresence() {
-      const channel = supabase.channel('online-users');
+    function startPresence() {
+      const channel = supabase.channel('online');
       channel.on('presence', { event: 'sync' }, () => {
-        const users = channel.presenceState();
-        document.querySelectorAll('.chat-item').forEach(el => {
-          const username = el.querySelector('.name').textContent;
-          const dot = el.querySelector('.online-dot') || document.createElement('span');
-          dot.className = 'online-dot';
-          if (users[username]) {
-            el.querySelector('.preview').innerHTML += ' <span class="online-dot"></span> online';
-          }
-        });
+        const state = channel.presenceState();
+        if (state[to]) document.getElementById('statusText').textContent = 'online';
       }).subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.track({ username: me, online_at: new Date().toISOString() });
-        }
+        if (status === 'SUBSCRIBED') await channel.track({ user: me });
       });
-
-      // Har 30 sekundda last_seen yangilash
-      setInterval(() => {
-        supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('username', me);
-      }, 30000);
     }
 
     async function loadChats() {
       const { data } = await supabase.from('messages')
         .select('sender,receiver,text,created_at,read')
         .or(`sender.eq.${me},receiver.eq.${me}`)
-        .order('created_at', {ascending: false});
+        .order('created_at', { ascending: false });
 
       const chats = {}, unread = {};
       data.forEach(m => {
         const other = m.sender === me ? m.receiver : m.sender;
-        if (!chats[other] || new Date(chats[other].time) < new Date(m.created_at)) {
+        if (!chats[other] || new Date(m.created_at) > new Date(chats[other].time))
           chats[other] = { name: other, msg: m.text, time: m.created_at };
-        }
         if (m.receiver === me && !m.read) unread[other] = (unread[other] || 0) + 1;
       });
 
       const list = document.getElementById('chatList');
-      if (Object.keys(chats).length === 0) {
-        list.innerHTML = '<div class="empty">Hozircha chat yoʻq<br><small>Qidiruvdan boshlang</small></div>';
-        return;
-      }
-
       list.innerHTML = Object.values(chats)
         .sort((a,b) => new Date(b.time) - new Date(a.time))
         .map(c => `
@@ -193,10 +172,9 @@
               <div class="name">${c.name}</div>
               <div class="preview">${c.msg}</div>
             </div>
-            <div class="time">${formatTime(c.time)}</div>
             ${unread[c.name] ? `<div class="badge">${unread[c.name]}</div>` : ''}
           </div>
-        `).join('');
+        `).join('') || '<div class="empty">Hozircha chat yoʻq</div>';
     }
 
     async function search(q) {
@@ -204,25 +182,19 @@
       const { data } = await supabase.from('profiles').select('username').ilike('username', `%${q.toLowerCase()}%`);
       document.getElementById('chatList').innerHTML = data
         .filter(u => u.username !== me)
-        .map(u => `
-          <div class="chat-item" onclick="openChat('${u.username}')">
-            <img src="https://via.placeholder.com/52/007aff/fff?text=${u.username[1].toUpperCase()}"/>
-            <div style="flex:1">
-              <div class="name">${u.username}</div>
-              <div class="preview">Yangi suhbat</div>
-            </div>
-          </div>
-        `).join('') || '<div class="empty">Topilmadi</div>';
+        .map(u => `<div class="chat-item" onclick="openChat('${u.username}')">
+          <img src="https://via.placeholder.com/52/007aff/fff?text=${u.username[1].toUpperCase()}"/>
+          <div style="flex:1"><div class="name">${u.username}</div><div class="preview">Yangi suhbat</div></div>
+        </div>`).join('') || '<div class="empty">Topilmadi</div>';
     }
 
     function openChat(u) {
       to = u;
       document.getElementById('chatName').textContent = u;
-      document.getElementById('statusText').innerHTML = '<span class="online-dot"></span> online';
+      document.getElementById('statusText').textContent = 'online';
       goTo('chatScreen');
       document.getElementById('messages').innerHTML = '';
       loadMsg();
-      markAsRead();
     }
 
     function back() { goTo('chatsScreen'); loadChats(); }
@@ -233,56 +205,55 @@
       data.forEach(addMsg);
 
       supabase.removeAllChannels();
-      const channel = supabase.channel(`chat:${id}`);
-      channel.on('postgres_changes', {event:'INSERT',schema:'public',table:'messages',filter:`chat_id=eq.${id}`}, p => {
-        addMsg(p.new);
-        if (p.new.sender !== me) play();
-        if (document.getElementById('chatsScreen').classList.contains('active')) loadChats();
-      }).subscribe();
+      const ch = supabase.channel(`chat:${id}`);
+      ch.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `chat_id=eq.${id}` }, p => {
+        if (p.new.sender !== me) {
+          addMsg(p.new);
+          notify(p.new.sender, p.new.text);
+        }
+      })
+      .on('presence', { event: 'sync' }, () => {
+        const state = ch.presenceState();
+        const indicator = document.getElementById('typingIndicator');
+        if (state[to] && state[to][0]?.typing) indicator.textContent = 'Yozmoqda...';
+        else indicator.textContent = '';
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') await ch.track({ typing: false });
+      });
+    }
+
+    function typing() {
+      clearTimeout(typingTimer);
+      supabase.channel(`chat:${[me,to].sort().join('_')}`).track({ typing: true });
+      typingTimer = setTimeout(() => {
+        supabase.channel(`chat:${[me,to].sort().join('_')}`).track({ typing: false });
+      }, 1000);
     }
 
     async function send() {
+     
       const text = document.getElementById('msgText').value.trim();
       if (!text || !to) return;
       const id = [me, to].sort().join('_');
-      await supabase.from('messages').insert({
-        chat_id: id,
-        sender: me,
-        receiver: to,
-        text,
-        read: false
-      });
+      await supabase.from('messages').insert({ chat_id: id, sender: me, receiver: to, text });
       document.getElementById('msgText').value = '';
-    }
-
-    async function markAsRead() {
-      const id = [me, to].sort().join('_');
-      await supabase.from('messages').update({read: true}).eq('chat_id', id).eq('receiver', me);
     }
 
     function addMsg(m) {
       const div = document.createElement('div');
       div.className = `msg ${m.sender === me ? 'sent' : 'received'}`;
-      div.innerHTML = `${m.text}<div class="msg-time">${formatTime(m.created_at)}</div>`;
+      div.innerHTML = `${m.text}<div class="msg-time">${new Date(m.created_at).toLocaleTimeString('uz', {hour:'2-digit', minute:'2-digit'})}</div>`;
       document.getElementById('messages').appendChild(div);
       div.scrollIntoView({behavior:'smooth'});
     }
 
-    function formatTime(t) {
-      const date = new Date(t);
-      const now = new Date();
-      const diff = (now - date) / 1000;
-      if (diff < 60) return 'hozir';
-      if (diff < 3600) return Math.floor(diff/60) + ' daqiqa oldin';
-      return date.toLocaleTimeString('uz-UZ', {hour:'2-digit', minute:'2-digit'});
+    function goTo(s) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(s).classList.add('active');
     }
 
-    function goTo(screen) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screen).classList.add('active');
-    }
-
-    // AVTO KIRISH — SAHIFA YANGILANGANDA HAM CHATDA QOLADI
+    // SAHIFA YANGILANGANDA HAM CHATDA QOLADI
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
         const { data } = await supabase.from('profiles').select('username').eq('id', session.user.id).single();
@@ -290,14 +261,13 @@
           me = data.username;
           goTo('chatsScreen');
           loadChats();
-          startPresence();
-        } else {
-          goTo('usernameScreen');
-        }
+          startPresence
+
+();
+        } else goTo('usernameScreen');
       }
     });
 
-    // SAHIFA OCHILGANDA
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -307,9 +277,7 @@
           goTo('chatsScreen');
           loadChats();
           startPresence();
-        } else {
-          goTo('usernameScreen');
-        }
+        } else goTo('usernameScreen');
       }
     })();
   </script>
