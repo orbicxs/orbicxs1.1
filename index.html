@@ -92,7 +92,7 @@
   </div>
 
   <!-- OVOZLI BILDIRISHNOMA – YANGI XABAR KELGANDA "DING" CHIQAADI -->
-  <audio id="notificationSound" src="https://orbixs.com/ding.mp3" preload="auto"></audio>
+  <audio id="notificationSound" src="https://orbixs1-1.vercel.app/ding.mp3" preload="auto"></audio>
 
   <script>
     const supabase = window.supabase.createClient(
@@ -112,7 +112,7 @@
     async function sendLink() {
       const email = document.getElementById('emailInput').value.trim();
       if (!email.includes('@')) return alert('Toʻgʻri email');
-      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://orbicxs.com/' } });
+      const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: 'https://orbicxs1-1.vercel.app/' } });
       if (error) alert(error.message); else alert('Havola yuborildi!');
     }
 
