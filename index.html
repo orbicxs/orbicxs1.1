@@ -5,31 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>OrbicXs</title>
   <meta name="theme-color" content="#007aff">
-  <link rel="manifest" href="data:application/manifest+json,{
-    \"name\":\"OrbicXs\",
-    \"short_name\":\"OrbicXs\",
-    \"start_url\":\"/\",
-    \"display\":\"standalone\",
-    \"background_color\":\"#000\",
-    \"theme_color\":\"#007aff\",
-    \"icons\":[{\"src\":\"https://orbicxs1-1.vercel.app/icon.png\",\"sizes\":\"192x192\",\"type\":\"image/png\"}]
-  }"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap');
     *{margin:0;padding:0;box-sizing:border-box;font-family:'SF Pro Display',sans-serif;-webkit-tap-highlight-color:transparent;}
     html,body{height:100%;overflow:hidden;background:#000;}
     body{display:flex;justify-content:center;align-items:center;}
-    .app{
-      width:100%;max-width:420px;height:100dvh;background:#fff;
-      border-radius:20px;box-shadow:0 10px 50px rgba(0,0,0,.5);
-      overflow:hidden;display:flex;flex-direction:column;
-      position:relative;
-    }
+    .app{width:100%;max-width:420px;height:100dvh;background:#fff;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 10px 50px rgba(0,0,0,.6);border-radius:20px;}
     .screen{position:absolute;inset:0;display:flex;flex-direction:column;transition:opacity .3s;opacity:0;pointer-events:none;}
-    .screen.active{opacity:1;pointer-events:all;}
-    .header{background:#007aff;color:#fff;padding:16px 16px 16px 56px;font-size:20px;font-weight:600;position:relative;}
-    .back{position:absolute;left:12px;top:12px;font-size:32px;cursor:pointer;z-index:10;}
+    .screen.active{opacity:1;pointer-events:all;z-index:10;}
+    .header{background:#007aff;color:#fff;padding:12px 16px 12px 56px;font-size:19px;font-weight:600;position:relative;}
+    .back{position:absolute;left:12px;top:10px;font-size:32px;cursor:pointer;z-index:10;}
     .input{width:100%;padding:16px;border-radius:14px;border:1px solid #ddd;font-size:17px;background:#f9f9f9;margin:12px 0;}
     .btn{width:100%;padding:16px;background:#007aff;color:#fff;border:none;border-radius:14px;font-size:18px;margin-top:20px;cursor:pointer;}
     .logo svg{width:80px;height:80px;fill:#007aff;margin:0 auto 30px;}
@@ -54,6 +40,7 @@
     .input-bar button{width:48px;height:48px;background:#007aff;color:#fff;border:none;border-radius:50%;font-size:22px;cursor:pointer;}
     .empty{text-align:center;padding:120px 20px;color:#888;font-size:16px;line-height:1.6;}
     .status{font-size:13px;color:#ccc;text-align:center;margin-top:4px;}
+    .online-dot{width:10px;height:10px;background:#4cd964;border-radius:50%;display:inline-block;margin-right:6px;}
   </style>
 </head>
 <body>
@@ -63,9 +50,9 @@
     <div id="emailScreen" class="screen active">
       <div style="padding:40px 30px;text-align:center;">
         <div class="logo"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#007aff"/><path d="M30 50a20 20 0 1 1 40 0" fill="none" stroke="#fff" stroke-width="8"/><circle cx="65" cy="45" r="8" fill="#fff"/></svg></div>
-        <h2 style="font-size:24px;margin-bottom:30px;">OrbicXs ga xush kelibsiz</h2>
+        <h2>OrbicXs</h2>
         <input type="email" id="emailInput" class="input" placeholder="Emailingiz" />
-        <button class="btn" onclick="sendLink()">DAVOM ETISH</button>
+        <button class="btn" onclick="sendLink()">KIRISH</button>
       </div>
     </div>
 
@@ -73,10 +60,10 @@
     <div id="usernameScreen" class="screen">
       <div style="padding:40px 30px;text-align:center;">
         <div class="logo"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="#007aff"/><path d="M30 50a20 20 0 1 1 40 0" fill="none" stroke="#fff" stroke-width="8"/><circle cx="65" cy="45" r="8" fill="#fff"/></svg></div>
-        <h2 style="font-size:24px;margin-bottom:20px;">Ismingizni kiriting</h2>
+        <h2>Ismingizni tanlang</h2>
         <div class="avatar"><svg viewBox="0 0 100 100" width="60"><circle cx="50" cy="35" r="20" fill="#888"/><path d="M20 90c0-20 20-40 60-40s60 20 60 40" fill="none" stroke="#888" stroke-width="12"/></svg></div>
-        <input type="text" id="nameInput" class="input" placeholder="Masalan: Ali" />
-        <button class="btn" onclick="saveName()">SAQLASH VA KIRISH</button>
+        <input type="text" id="nameInput" class="input" placeholder="Masalan: Ali" maxlength="20"/>
+        <button class="btn" onclick="saveName()">SAQLASH</button>
       </div>
     </div>
 
@@ -87,7 +74,7 @@
         <input type="text" placeholder="Qidiruv..." oninput="search(this.value)" />
       </div>
       <div class="chat-list" id="chatList">
-        <div class="empty">Hozircha xabar yoʻq<br><small>Qidiruv orqali odam toping</small></div>
+        <div class="empty">Hozircha chat yoʻq<br><small>Qidiruvdan boshlang</small></div>
       </div>
     </div>
 
@@ -96,20 +83,20 @@
       <div class="header">
         <span class="back" onclick="back()">Back</span>
         <div style="flex:1;text-align:center;">
-          <div class="name" id="chatName" style="font-size:19px;"></div>
+          <div class="name" id="chatName"></div>
           <div class="status" id="statusText">online</div>
         </div>
       </div>
       <div class="messages" id="messages"></div>
       <div class="input-bar">
-        <input id="msgText" placeholder="Xabar yozing..." onkeypress="if(event.key==='Enter')send()" />
+        <input id="msgText" placeholder="Xabar..." onkeypress="if(event.key==='Enter')send()" />
         <button onclick="send()">Send</button>
       </div>
     </div>
 
   </div>
 
-  <audio id="notificationSound" src="https://orbixs1-1.vercel.app/ding.mp3" preload="auto"></audio>
+  <audio id="ding" src="https://orbixs.com/ding.mp3" preload="auto"></audio>
 
   <script>
     const supabase = window.supabase.createClient(
@@ -118,40 +105,62 @@
     );
 
     let me = '', to = '';
-    const sound = document.getElementById('notificationSound');
+    const sound = document.getElementById('ding');
 
-    function playNotification() {
-      sound.currentTime = 0;
-      sound.play().catch(() => {});
-    }
+    // Ovoz
+    function play() { sound.currentTime = 0; sound.play().catch(()=>{}); }
 
     async function sendLink() {
       const email = document.getElementById('emailInput').value.trim();
-      if (!email.includes('@')) return alert('Toʻgʻri email kiriting');
+      if (!email.includes('@')) return alert('Email notoʻgʻri');
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: { emailRedirectTo: 'https://orbicxs1-1.vercel.app/' }
       });
-      if (error) alert('Xato: ' + error.message);
+      if (error) alert(error.message);
       else alert('Havola yuborildi! Emailni bosing');
     }
 
     async function saveName() {
-      let name = document.getElementById('nameInput').value.trim();
-      if (!name) return alert('Ism kiriting');
-      name = name.replace(/[^a-zA-Z0-9_]/g, '');
-      if (!name) return alert('Faqat harf va raqam!');
-      me = '@' + name.toLowerCase().slice(0, 25);
+      let name = document.getElementById('nameInput').value.trim().replace(/[^a-zA-Z0-9_]/g, '');
+      if (name.length < 2) return alert('Ism kamida 2 harf boʻlsin');
+      me = '@' + name.toLowerCase();
 
       const { data: exists } = await supabase.from('profiles').select('id').eq('username', me);
-      if (exists.length > 0) return alert('Bu username band! Boshqasini kiriting');
+      if (exists.length > 0) return alert('Bu username band!');
 
       const { data: { user } } = await supabase.auth.getUser();
-      const { error } = await supabase.from('profiles').upsert({ id: user.id, username: me });
-      if (error) return alert('Saqlanmadi: ' + error.message);
+      const { error } = await supabase.from('profiles').upsert({ id: user.id, username: me, last_seen: new Date().toISOString() });
+      if (error) return alert('Xato: ' + error.message);
 
       goTo('chatsScreen');
       loadChats();
+      startPresence(); // ONLINE HOLAT
+    }
+
+    // ONLINE / LAST SEEN
+    async function startPresence() {
+      const channel = supabase.channel('online-users');
+      channel.on('presence', { event: 'sync' }, () => {
+        const users = channel.presenceState();
+        document.querySelectorAll('.chat-item').forEach(el => {
+          const username = el.querySelector('.name').textContent;
+          const dot = el.querySelector('.online-dot') || document.createElement('span');
+          dot.className = 'online-dot';
+          if (users[username]) {
+            el.querySelector('.preview').innerHTML += ' <span class="online-dot"></span> online';
+          }
+        });
+      }).subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({ username: me, online_at: new Date().toISOString() });
+        }
+      });
+
+      // Har 30 sekundda last_seen yangilash
+      setInterval(() => {
+        supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('username', me);
+      }, 30000);
     }
 
     async function loadChats() {
@@ -171,7 +180,7 @@
 
       const list = document.getElementById('chatList');
       if (Object.keys(chats).length === 0) {
-        list.innerHTML = '<div class="empty">Hozircha xabar yoʻq<br><small>Qidiruv orqali odam toping</small></div>';
+        list.innerHTML = '<div class="empty">Hozircha chat yoʻq<br><small>Qidiruvdan boshlang</small></div>';
         return;
       }
 
@@ -179,7 +188,7 @@
         .sort((a,b) => new Date(b.time) - new Date(a.time))
         .map(c => `
           <div class="chat-item" onclick="openChat('${c.name}')">
-            <img src="https://via.placeholder.com/52/007aff/ffffff?text=${c.name[1].toUpperCase()}"/>
+            <img src="https://via.placeholder.com/52/007aff/fff?text=${c.name[1].toUpperCase()}"/>
             <div style="flex:1">
               <div class="name">${c.name}</div>
               <div class="preview">${c.msg}</div>
@@ -197,19 +206,19 @@
         .filter(u => u.username !== me)
         .map(u => `
           <div class="chat-item" onclick="openChat('${u.username}')">
-            <img src="https://via.placeholder.com/52/007aff/ffffff?text=${u.username[1].toUpperCase()}"/>
+            <img src="https://via.placeholder.com/52/007aff/fff?text=${u.username[1].toUpperCase()}"/>
             <div style="flex:1">
               <div class="name">${u.username}</div>
-              <div class="preview">Yangi suhbat boshlash</div>
+              <div class="preview">Yangi suhbat</div>
             </div>
           </div>
-        `).join('') || '<div class="empty">Hech kim topilmadi</div>';
+        `).join('') || '<div class="empty">Topilmadi</div>';
     }
 
     function openChat(u) {
       to = u;
       document.getElementById('chatName').textContent = u;
-      document.getElementById('statusText').textContent = 'online';
+      document.getElementById('statusText').innerHTML = '<span class="online-dot"></span> online';
       goTo('chatScreen');
       document.getElementById('messages').innerHTML = '';
       loadMsg();
@@ -224,11 +233,10 @@
       data.forEach(addMsg);
 
       supabase.removeAllChannels();
-      supabase.channel('msg').on('postgres_changes', {event:'INSERT',schema:'public',table:'messages'}, p => {
-        if (p.new.chat_id === [me,to].sort().join('_')) {
-          addMsg(p.new);
-          if (p.new.sender !== me) playNotification();
-        }
+      const channel = supabase.channel(`chat:${id}`);
+      channel.on('postgres_changes', {event:'INSERT',schema:'public',table:'messages',filter:`chat_id=eq.${id}`}, p => {
+        addMsg(p.new);
+        if (p.new.sender !== me) play();
         if (document.getElementById('chatsScreen').classList.contains('active')) loadChats();
       }).subscribe();
     }
@@ -237,7 +245,13 @@
       const text = document.getElementById('msgText').value.trim();
       if (!text || !to) return;
       const id = [me, to].sort().join('_');
-      await supabase.from('messages').insert({chat_id: id, sender: me, receiver: to, text, read: false});
+      await supabase.from('messages').insert({
+        chat_id: id,
+        sender: me,
+        receiver: to,
+        text,
+        read: false
+      });
       document.getElementById('msgText').value = '';
     }
 
@@ -249,24 +263,18 @@
     function addMsg(m) {
       const div = document.createElement('div');
       div.className = `msg ${m.sender === me ? 'sent' : 'received'}`;
-      div.innerHTML = `
-        ${m.text}
-        <div class="msg-time">
-          ${formatTime(m.created_at)}
-          ${m.sender === me && m.read ? '<div class="read">Oʻqildi</div>' : ''}
-        </div>
-      `;
+      div.innerHTML = `${m.text}<div class="msg-time">${formatTime(m.created_at)}</div>`;
       document.getElementById('messages').appendChild(div);
       div.scrollIntoView({behavior:'smooth'});
     }
 
     function formatTime(t) {
-      return new Date(t).toLocaleTimeString('uz-UZ', {
-        timeZone: 'Asia/Tashkent',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
+      const date = new Date(t);
+      const now = new Date();
+      const diff = (now - date) / 1000;
+      if (diff < 60) return 'hozir';
+      if (diff < 3600) return Math.floor(diff/60) + ' daqiqa oldin';
+      return date.toLocaleTimeString('uz-UZ', {hour:'2-digit', minute:'2-digit'});
     }
 
     function goTo(screen) {
@@ -274,27 +282,31 @@
       document.getElementById(screen).classList.add('active');
     }
 
+    // AVTO KIRISH — SAHIFA YANGILANGANDA HAM CHATDA QOLADI
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        const { data } = await supabase.from('profiles').select('username').eq('id', session.user.id).maybeSingle();
+        const { data } = await supabase.from('profiles').select('username').eq('id', session.user.id).single();
         if (data?.username) {
           me = data.username;
           goTo('chatsScreen');
           loadChats();
+          startPresence();
         } else {
           goTo('usernameScreen');
         }
       }
     });
 
+    // SAHIFA OCHILGANDA
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data } = await supabase.from('profiles').select('username').eq('id', session.user.id).maybeSingle();
+        const { data } = await supabase.from('profiles').select('username').eq('id', session.user.id).single();
         if (data?.username) {
           me = data.username;
           goTo('chatsScreen');
           loadChats();
+          startPresence();
         } else {
           goTo('usernameScreen');
         }
